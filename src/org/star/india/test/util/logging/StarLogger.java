@@ -2,16 +2,19 @@ package org.star.india.test.util.logging;
 
 import java.util.logging.Level;
 
+import org.star.india.test.util.logging.interf.ILogger;
 import org.star.india.test.util.logging.interf.IStarLogHandler;
 
-public class StarLogger {
+public class StarLogger implements ILogger {
+	private String name;
 	private IStarLogHandler handler;
 	private StarLogContext context;
 	private int logLevel;
 
-	StarLogger() {
+	public StarLogger(String name) {
+		this.name = name;
 		logLevel = Integer.MIN_VALUE;
-		//defaultHandler
+		// defaultHandler
 		handler = new ConsoleStarLogHandler();
 	}
 
@@ -24,7 +27,7 @@ public class StarLogger {
 		if (!isLoggable(logLevel)) {
 			return;
 		}
-		StarLogRecord lr = new StarLogRecord(logLevel, message);
+		StarLogRecord lr = new StarLogRecord(logLevel, message, Thread.currentThread().getName());
 		logNow(lr);
 	}
 
@@ -38,4 +41,18 @@ public class StarLogger {
 	public void logNow(StarLogRecord record) {
 		handler.publish(record);
 	}
+	
+	
+	@Override
+	public  StarLogger getLogger(String name) {
+		return new StarLogger(name);
+	}
+
+	@Override
+	public StarLogger getLogger(String name, StarLogContext context) {
+		StarLogger logger = new StarLogger(name);
+		logger.setContext(context);
+		return logger;
+	}
+
 }
